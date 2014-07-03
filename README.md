@@ -43,7 +43,7 @@ console.log('');
 **!!! NEED HELP TO STABILIZE NETWORK EVOLVE METHOD !!!**
 
 *
-Evolve method implemented for tests but instable
+Evolve method implemented for tests but instable. 
 From time to time a correct result is found but often fitness is locked to ~ 1.000 ....
 *
 
