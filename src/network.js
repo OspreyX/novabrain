@@ -48,9 +48,15 @@ var Network = module.exports = function(__options) {
                 me.layers = [];
                 me.layers[0] = Network.createLayer(me.numberOfInputs, 1);
                 for (var i = 1; i < me.numberOfHiddenLayers + 1; i++) {
-                    me.layers[i] = Network.createLayer(me.numberOfNeuronsPerHiddenLayers, me.layers[i - 1].length);
+                    me.layers[i] = Network.createLayer(
+                        me.numberOfNeuronsPerHiddenLayers,
+                        me.layers[i - 1].length
+                    );
                 }
-                me.layers[me.layers.length] = Network.createLayer(me.numberOfOutputs, me.layers[me.layers.length - 1].length);
+                me.layers[me.layers.length] = Network.createLayer(
+                    me.numberOfOutputs,
+                    me.layers[me.layers.length - 1].length
+                );
             }
         }
 
@@ -158,10 +164,12 @@ var Network = module.exports = function(__options) {
             });
         }
 
+        // Check inputs
         if (!(Array.isArray(data[0].input) && data[0].input.length === me.numberOfInputs)) {
             throw new Error('Network::run expected an array of ' + me.numberOfInputs + ' inputs');
         }
 
+        // Check outputs
         if (!(Array.isArray(data[0].output) && data[0].output.length === me.numberOfOutputs)) {
             throw new Error('Network::run expected an array of ' + me.numberOfOutputs + ' outputs');
         }
@@ -169,7 +177,7 @@ var Network = module.exports = function(__options) {
         var networks = [];
         var error = 1;
         var callbackPeriod = callbackPeriod || 10;
-
+        
         for (var i = 0; i < me.genetic.population; i++) {
             networks.push(new Network(this));
         }
@@ -180,7 +188,10 @@ var Network = module.exports = function(__options) {
 
                 error = 0;
                 data.forEach(function(set) {
-                    error += Network.genetic.getErrorSum(networks[j].run(set.input), set.output);
+                    error += Network.genetic.getErrorSum(
+                        networks[j].run(set.input),
+                        set.output
+                    );
                 });
 
                 networks[j].__fitness = error;
@@ -202,6 +213,8 @@ var Network = module.exports = function(__options) {
 
         return { error: error, iterations: i };
     };
+
+    // Configure the network if some options are given
 
     if (__options) {
         this.configure(__options);
