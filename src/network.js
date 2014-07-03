@@ -1,4 +1,44 @@
-
+//
+// A class representing a Neural Network.
+//
+// @param options.numberOfInputs >> The number of inputs in this neural network
+// @param options.numberOfOutputs >> The number of outputs in this neural network
+// @param options.numberOfHiddenLayers >> The number of hidden layers in this network
+// @param options.numberOfNeuronsPerHiddenLayer >> The number of neurons per hidden layer
+// @param options.backprop.iterations >> The number of back propagation iterations
+// @param options.backprop.learningRate >> Learning rate
+// @param options.backprop.momentum >> Reduction rate
+// @param options.backprop.errorRate >> Error rate toerance used to quit iterations loop
+// @param options.genetic.population >> Number of entities by generation
+// @param options.genetic.iterations >> Number of generations
+// @param options.genetic.mutationRate >> Weights mutation rate
+// @param options.genetic.variationRate >> Weights mutation limite rate
+// @param options.genetic.survivalRate >> Rate of networks keeped by generation
+// @param options.genetic.errorRate >> Error rate toerance used to quit iterations loop
+// @param options.layers >> Optional, the layers used in the initial state (otherwise random)
+//
+//      {
+//         numberOfInputs: 2,                 
+//         numberOfOutputs: 1,
+//         numberOfHiddenLayers: 1,
+//         numberOfNeuronsPerHiddenLayers: 3,
+//         backprop: {
+//            iterations: 20000,
+//            learningRate: 0.3,
+//            momentum: 0.1,
+//            errorRate: 0.005
+//         },
+//         genetic: {
+//            population: 30,
+//            iterations: 2000,
+//            mutationRate: 0.3,
+//            variationRate: 0.3,
+//            survivalRate: 0.3,
+//            errorRate: 0.005
+//         },
+//         layers: [],
+//      }
+//
 var Network = module.exports = function(__options) {
 
     var me = {};
@@ -177,7 +217,7 @@ var Network = module.exports = function(__options) {
         var networks = [];
         var error = 1;
         var callbackPeriod = callbackPeriod || 10;
-        
+
         for (var i = 0; i < me.genetic.population; i++) {
             networks.push(new Network(this));
         }
