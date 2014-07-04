@@ -86,14 +86,14 @@ var Network = module.exports = function(__options) {
                 me.layers = JSON.parse(JSON.stringify(options.layers));
             } else {
                 me.layers = [];
-                me.layers[0] = Network.createLayer(me.numberOfInputs, 1);
+                me.layers[0] = Network.common.createLayer(me.numberOfInputs, 1);
                 for (var i = 1; i < me.numberOfHiddenLayers + 1; i++) {
-                    me.layers[i] = Network.createLayer(
+                    me.layers[i] = Network.common.createLayer(
                         me.numberOfNeuronsPerHiddenLayers,
                         me.layers[i - 1].length
                     );
                 }
-                me.layers[me.layers.length] = Network.createLayer(
+                me.layers[me.layers.length] = Network.common.createLayer(
                     me.numberOfOutputs,
                     me.layers[me.layers.length - 1].length
                 );
@@ -120,7 +120,7 @@ var Network = module.exports = function(__options) {
         }
         var outputs = [];
         for (var layerId = 1; layerId < me.layers.length; layerId++) {
-            outputs = input = Network.outputLayer(me.layers[layerId], input);
+            outputs = input = Network.common.outputLayer(me.layers[layerId], input);
         }
         return outputs;
     };
@@ -171,6 +171,7 @@ var Network = module.exports = function(__options) {
         var errorRate       = me.backprop.errorRate;
         var callbackPeriod  = callbackPeriod || 10;
         var error           = 1;
+
         for (var i = 0; i < iterations && error > errorRate; i++) {
             var sum = 0;
             for (var j = 0; j < data.length; j++) {
@@ -181,6 +182,7 @@ var Network = module.exports = function(__options) {
                 callback({ error: error, iterations: i });
             }
         }
+        
         return { error: error, iterations: i };
     };
 
@@ -262,57 +264,64 @@ var Network = module.exports = function(__options) {
 };
 
 //-------------------------------------------------------------------------------------------------
-// Helpers
+// Common helpers namespace
 //-------------------------------------------------------------------------------------------------
 
-Network.zeros = function(size) {
-    var results = [];
-    for (var i = 0; i < size; i++) {
-        results.push(0);
-    }
-    return results;
-};
+Network.common = {
 
-Network.randos = function(size) {
-    var results = [];
-    for (var i = 0; i < size; i++) {
-        results.push(Math.random() * 0.4 - 0.2);
-    }
-    return results;
-};
-
-Network.createLayer = function(numberOfNeurons, numberOfInputsPerNeuron) {
-    var layer = [];
-    for (var i = 0; i < numberOfNeurons; i++) {
-        layer[i] = {
-            bias: Math.random() * 0.4 - 0.2,
-            weights: Network.randos(numberOfInputsPerNeuron),
-            changes: Network.zeros(numberOfInputsPerNeuron),
-        };
-    }
-    return layer;
-};
-
-Network.outputLayer = function(layer, input) {
-    var results = [];
-    for (var neuronId = 0; neuronId < layer.length; neuronId++) {
-        var neuron = layer[neuronId];
-        var sum = neuron.bias;
-        for (var k = 0; k < neuron.weights.length; k++) {
-            sum += neuron.weights[k] * input[k];
+    zeros: function(size) {
+        var results = [];
+        for (var i = 0; i < size; i++) {
+            results.push(0);
         }
-        results.push(1 / (1 + Math.exp(-sum)));
-    }
-    return results;
+        return results;
+    },
+
+    randos: function(size) {
+        var results = [];
+        for (var i = 0; i < size; i++) {
+            results.push(Math.random() * 0.4 - 0.2);
+        }
+        return results;
+    },
+
+    createLayer: function(numberOfNeurons, numberOfInputsPerNeuron) {
+        var layer = [];
+        for (var i = 0; i < numberOfNeurons; i++) {
+            layer[i] = {
+                bias: Math.random() * 0.4 - 0.2,
+                weights: Network.common.randos(numberOfInputsPerNeuron),
+                changes: Network.common.zeros(numberOfInputsPerNeuron),
+            };
+        }
+        return layer;
+    },
+
+    outputLayer: function(layer, input) {
+        var results = [];
+        for (var neuronId = 0; neuronId < layer.length; neuronId++) {
+            var neuron = layer[neuronId];
+            var sum = neuron.bias;
+            for (var k = 0; k < neuron.weights.length; k++) {
+                sum += neuron.weights[k] * input[k];
+            }
+            results.push(1 / (1 + Math.exp(-sum)));
+        }
+        return results;
+    },
+
 };
 
+//
+// Backprop helpers namespace
+//
 Network.backprop = {
 
     getOutputs: function(me, input) {
         var outputs = [];
         var data    = outputs[0] = input.slice();
         for (var layerId = 1; layerId < me.layers.length; layerId++) {
-            data = outputs[layerId] = Network.outputLayer(me.layers[layerId], data);
+            data = outputs[layerId] = Network.common.outputLayer(me.layers[layerId], data);
         }
         return outputs;
     },
@@ -363,7 +372,7 @@ Network.backprop = {
                 var delta  = deltas[layerId][neuronId];
                 var neuron = me.layers[layerId][neuronId];
                 if (!neuron.changes) {
-                    neuron.changes = Network.zeros(neuron.weights.length);
+                    neuron.changes = Network.common.zeros(neuron.weights.length);
                 }
                 for (var k = 0; k < incoming.length; k++) {
                     var change = neuron.changes[k];
@@ -376,10 +385,13 @@ Network.backprop = {
         }
 
         return Network.backprop.getErrorSum(errors[me.layers.length - 1]);
-    }
+    },
 
 };
 
+//
+// Genetic helpers namespace
+//
 Network.genetic = {
 
     getErrorSum: function (a, b) {
