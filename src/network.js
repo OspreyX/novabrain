@@ -242,7 +242,7 @@ var Network = module.exports = function(__options) {
 
                 currentSum += error;
 
-                // Switch to backprop training if genetic evolution locked
+                // Switch to backprop if genetic evolution locked
                 if (currentSum === previousSum) {
                     return this.train(data);
                 }
