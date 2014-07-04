@@ -182,7 +182,7 @@ var Network = module.exports = function(__options) {
                 callback({ error: error, iterations: i });
             }
         }
-        
+
         return { error: error, iterations: i };
     };
 
@@ -219,12 +219,16 @@ var Network = module.exports = function(__options) {
         var networks = [];
         var error = 1;
         var callbackPeriod = callbackPeriod || 10;
+        var previousSum = 0;
+        var currentSum = 0;
 
         for (var i = 0; i < me.genetic.population; i++) {
             networks.push(new Network(this));
         }
 
         for(var i = 0; i < me.genetic.iterations; i++) {
+
+            currentSum = 0;
 
             for (var j = 0, jmax = networks.length; j < jmax; j++) {
 
@@ -235,6 +239,13 @@ var Network = module.exports = function(__options) {
                         set.output
                     );
                 });
+
+                currentSum += error;
+
+                // Switch to backprop training if genetic evolution locked
+                if (currentSum === previousSum) {
+                    return this.train(data);
+                }
 
                 networks[j].__fitness = error;
 
@@ -247,6 +258,8 @@ var Network = module.exports = function(__options) {
                     return { error: error, iterations: i };
                 }
             };
+
+            previousSum = currentSum;
 
             networks = Network.genetic.epoch(me, networks);
         }
@@ -269,6 +282,19 @@ var Network = module.exports = function(__options) {
 
 Network.common = {
 
+    random: function(size) {
+        size = size || 0.4;
+        return Math.random() * size - (size / 2);
+    },
+
+    randos: function(size) {
+        var results = [];
+        for (var i = 0; i < size; i++) {
+            results.push(Network.common.random());
+        }
+        return results;
+    },
+
     zeros: function(size) {
         var results = [];
         for (var i = 0; i < size; i++) {
@@ -277,19 +303,11 @@ Network.common = {
         return results;
     },
 
-    randos: function(size) {
-        var results = [];
-        for (var i = 0; i < size; i++) {
-            results.push(Math.random() * 0.4 - 0.2);
-        }
-        return results;
-    },
-
     createLayer: function(numberOfNeurons, numberOfInputsPerNeuron) {
         var layer = [];
         for (var i = 0; i < numberOfNeurons; i++) {
             layer[i] = {
-                bias: Math.random() * 0.4 - 0.2,
+                bias: Network.common.random(),
                 weights: Network.common.randos(numberOfInputsPerNeuron),
                 changes: Network.common.zeros(numberOfInputsPerNeuron),
             };
@@ -407,11 +425,11 @@ Network.genetic = {
             layer.forEach(function(neuron) {
                 neuron.weights.forEach(function(weight, i) {
                     if(Math.random() < me.genetic.mutationRate) {
-                        neuron.weights[i] += (Math.random() * 2 - 1) * me.genetic.variationRate;
+                        neuron.weights[i] += Network.common.random(2) * me.genetic.variationRate;
                     }
                 });
                 if(Math.random() < me.genetic.mutationRate) {
-                    neuron.bias += (Math.random() * 2 - 1) * me.genetic.variationRate;
+                    neuron.bias += Network.common.random(2) * me.genetic.variationRate;
                 }
             });
         });

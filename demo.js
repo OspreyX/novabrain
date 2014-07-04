@@ -31,9 +31,9 @@ network.configure({
     genetic : {
         population: 30,
         iterations: 2000,
-        mutationRate: 0.3,
-        variationRate: 0.8,
-        survivalRate: 0.5,
+        mutationRate: 0.9,
+        variationRate: 0.9,
+        survivalRate: 0.9,
     },
 });
 
