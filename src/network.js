@@ -194,6 +194,36 @@ var Network = module.exports = function(__options) {
         return { error: gerror, iterations: i };
     };
 
+    //
+    // Network > toFunction
+    //
+    // Export a standalone function
+    // 
+    // @return Function
+    //
+    this.toFunction = function() {
+        var layers = JSON.stringify(me.layers, function(key,value) {
+            if (key=="changes") return undefined;
+            else return value;
+        });
+        var buffer = 'var layers = ' + layers + ';';
+        buffer += 'for (var i = 1; i < layers.length; i++) {';
+        buffer += 'var layer = layers[i];';
+        buffer += 'var output = [];';
+        buffer += 'for (var j = 0; j < layer.length; j++) {';
+        buffer += 'var neuron = layer[j];';
+        buffer += 'var result = neuron.bias;';
+        buffer += 'for (var k = 0; k < neuron.weights.length; k++) {';
+        buffer += 'result += neuron.weights[k] * input[k];';
+        buffer += '}';
+        buffer += 'output[j] = (1 / (1 + Math.exp(-result)));';
+        buffer += '}';
+        buffer += 'input = output;';
+        buffer += '}';
+        buffer += 'return output;';
+        return new Function("input", buffer);
+    };
+
     // Configure the network if some options are given
 
     if (__options) {
@@ -243,20 +273,20 @@ Network.outputLayer = function(layer, input) {
     var results = [];
     for (var neuronId = 0; neuronId < layer.length; neuronId++) {
         var neuron = layer[neuronId];
-        var sum = neuron.bias;
+        var result = neuron.bias;
         for (var k = 0; k < neuron.weights.length; k++) {
-            sum += neuron.weights[k] * input[k];
+            result += neuron.weights[k] * input[k];
         }
-        results.push(1 / (1 + Math.exp(-sum)));
+        results.push(1 / (1 + Math.exp(-result)));
     }
     return results;
 };
 
 Network.getOutputs = function(layers, input) {
     var outputs = [];
-    var data    = outputs[0] = input.slice();
+    var output  = outputs[0] = input.slice();
     for (var layerId = 1; layerId < layers.length; layerId++) {
-        data = outputs[layerId] = Network.outputLayer(layers[layerId], data);
+        output = outputs[layerId] = Network.outputLayer(layers[layerId], output);
     }
     return outputs;
 };
