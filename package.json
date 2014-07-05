@@ -1,17 +1,16 @@
 {
     "name": "novabrain",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "id": "novabrain",
-    "_id": "novabrain@0.5.0",
+    "_id": "novabrain@0.5.1",
     "_from": "novabrain@*",
-    "description": "Neural network module",
+    "description": "Neural network library for NodeJS",
     "keywords": [
         "perceptron",
         "neural network",
         "brain",
         "backprop",
         "back propagation",
-        "genetic algorithm",
         "classifier",
         "machine learning",
         "artificial intelligence"
