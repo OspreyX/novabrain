@@ -27,31 +27,31 @@ describe('Network', function(){
         });
 
         it('should throw an exception if the input array length is different of the neuron inputs number', function() {
-            var network = new Network({ numberOfInputs: 1 });
+            var network = new Network({ inputSize: 1 });
             assert.throws(function() { network.run([]); }, Error);
             assert.throws(function() { network.run([1,2]); }, Error);
             assert.throws(function() { network.run([1,2,3]); }, Error);
             assert.throws(function() { network.run([1,2,3,4]); }, Error);
             assert.throws(function() { network.run([1,2,3,4,5]); }, Error);
-            network = new Network({ numberOfInputs: 2 });
+            network = new Network({ inputSize: 2 });
             assert.throws(function() { network.run([]); }, Error);
             assert.throws(function() { network.run([1]); }, Error);
             assert.throws(function() { network.run([1,2,3]); }, Error);
             assert.throws(function() { network.run([1,2,3,4]); }, Error);
             assert.throws(function() { network.run([1,2,3,4,5]); }, Error);
-            network = new Network({ numberOfInputs: 3 });
+            network = new Network({ inputSize: 3 });
             assert.throws(function() { network.run([]); }, Error);
             assert.throws(function() { network.run([1]); }, Error);
             assert.throws(function() { network.run([1,2]); }, Error);
             assert.throws(function() { network.run([1,2,3,4]); }, Error);
             assert.throws(function() { network.run([1,2,3,4,5]); }, Error);
-            network = new Network({ numberOfInputs: 4 });
+            network = new Network({ inputSize: 4 });
             assert.throws(function() { network.run([]); }, Error);
             assert.throws(function() { network.run([1]); }, Error);
             assert.throws(function() { network.run([1,2]); }, Error);
             assert.throws(function() { network.run([1,2,3]); }, Error);
             assert.throws(function() { network.run([1,2,3,4,5]); }, Error);
-            network = new Network({ numberOfInputs: 5 });
+            network = new Network({ inputSize: 5 });
             assert.throws(function() { network.run([]); }, Error);
             assert.throws(function() { network.run([1]); }, Error);
             assert.throws(function() { network.run([1,2]); }, Error);
@@ -71,7 +71,7 @@ describe('Network', function(){
 
         it('should return an Array of 3 value between 0 and 1', function() {
             var network = new Network({
-                numberOfOutputs: 3,
+                outputSize: 3,
             });
             var results = network.run([1,2]);
             assert.ok(results instanceof Array);
@@ -83,8 +83,8 @@ describe('Network', function(){
 
         it('should return an Array of 5 value between 0 and 1', function() {
             var network = new Network({
-                numberOfInputs: 3,
-                numberOfOutputs: 5,
+                inputSize: 3,
+                outputSize: 5,
             });
             var results = network.run([1,2,3]);
             assert.ok(results instanceof Array);
@@ -100,65 +100,58 @@ describe('Network', function(){
 
         it('should return an options object', function() {
             var options = {
-                "numberOfInputs": 2,
-                "numberOfOutputs": 1,
-                "numberOfHiddenLayers": 1,
-                "numberOfNeuronsPerHiddenLayers": 3,
-                "backprop": {
-                    "iterations": 20000,
-                    "learningRate": 0.3,
-                    "momentum": 0.1,
-                    "errorThreshold": 0.005
-                },
-                "layers": [
-                    [
-                        {
-                            "bias": -0.09661294342949987,
-                            "weights": [
-                                -0.11975311525166035
-                            ]
-                        },
-                        {
-                            "bias": 0.17311697592958808,
-                            "weights": [
-                                0.1510948073118925
-                            ]
-                        }
-                    ],
-                    [
-                        {
-                            "bias": -0.1658152960240841,
-                            "weights": [
-                                -0.15972283948212862,
-                                -0.05795310437679291
-                            ]
-                        },
-                        {
-                            "bias": 0.17576630515977743,
-                            "weights": [
-                                -0.1720766675658524,
-                                -0.1821492242626846
-                            ]
-                        },
-                        {
-                            "bias": 0.06921933246776463,
-                            "weights": [
-                                -0.16638044798746707,
-                                0.04037412544712424
-                            ]
-                        }
-                    ],
-                    [
-                        {
-                            "bias": 0.1821145247668028,
-                            "weights": [
-                                0.1902920976281166,
-                                0.02364055216312408,
-                                -0.016087725944817055
-                            ]
-                        }
-                    ]
-                ]
+               "inputSize": 2,
+               "hiddenSize": 3,
+               "outputSize": 1,
+               "layers": [
+                  [
+                     {
+                        "bias": 0.13143138466402887,
+                        "weights": [
+                           0.020857981219887745
+                        ]
+                     },
+                     {
+                        "bias": -0.08996645789593459,
+                        "weights": [
+                           -0.1790315237827599
+                        ]
+                     }
+                  ],
+                  [
+                     {
+                        "bias": 3.1483718895317425,
+                        "weights": [
+                           -2.2795920406734957,
+                           -2.3113516244213925
+                        ]
+                     },
+                     {
+                        "bias": 2.2686722893794675,
+                        "weights": [
+                           -5.967725611272962,
+                           -5.988911456150587
+                        ]
+                     },
+                     {
+                        "bias": 4.148007480487826,
+                        "weights": [
+                           -2.9249843231750043,
+                           -2.8969145442278283
+                        ]
+                     }
+                  ],
+                  [
+                     {
+                        "bias": -3.912162152100724,
+                        "weights": [
+                           3.9115427272689627,
+                           -8.512680722143172,
+                           5.1902442875249655
+                        ]
+                     }
+                  ]
+               ]
             };
 
             var network = new Network(options);
