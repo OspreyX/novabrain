@@ -144,7 +144,7 @@ var Network = module.exports = function(__options) {
                     deltas[layerId] = [];
                     for (var neuronId = 0; neuronId < me.layers[layerId].length; neuronId++) {
                         var output = outputs[layerId][neuronId];
-                        var nerror  = 0;
+                        var nerror = 0;
                         if (layerId === me.layers.length - 1) {
                             nerror = target[neuronId] - output;
                         } else {

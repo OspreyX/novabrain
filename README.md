@@ -58,7 +58,5 @@ console.log('');
 $ npm install mocha -g
 $ mocha
 $ mocha test
-$ mocha test/base-network
-$ mocha test/genetic-network
 $ ...
 ```
