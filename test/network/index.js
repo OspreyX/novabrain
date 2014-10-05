@@ -1,7 +1,6 @@
 
-
-var assert = require('assert');
-var Network = require('./../src/network');
+var assert  = require('assert');
+var Network = require('./../../src/network');
 
 describe('Network', function(){
 
@@ -162,6 +161,19 @@ describe('Network', function(){
     });
 
     describe('#train', function(){
+
+        it('should resolve color lookup', function(){
+  
+            var network = new Network();
+
+            network.train([
+                {input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 }},
+                {input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 }},
+                {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }},
+            ]);
+
+            console.log(network.run({ r: 1, g: 0.4, b: 0 }));
+        });
 
         it('should resolve XOR', function(){
   

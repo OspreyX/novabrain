@@ -1,3 +1,7 @@
+
+var underscore = require('underscore');
+var formator  = require('./formator');
+
 //
 // A class representing a Neural Network.
 //
@@ -55,6 +59,11 @@ var Network = module.exports = function(__options) {
     // @return Array
     //
     this.run = function(input) {
+
+        if (this.inputLookup) {
+            input = formator.toArray(this.inputLookup, input);
+        }
+
         if (!Array.isArray(me.layers)) {
             throw new Error('Network must be initialized with options or trained');
         }
@@ -65,6 +74,11 @@ var Network = module.exports = function(__options) {
         for (var layerId = 1; layerId < me.layers.length; layerId++) {
             outputs = input = Network.outputLayer(me.layers[layerId], input);
         }
+
+        if (this.outputLookup) {
+            outputs = formator.toHash(this.outputLookup, outputs);
+        }
+
         return outputs;
     };
 
@@ -97,6 +111,8 @@ var Network = module.exports = function(__options) {
     // @return Object
     //
     this.train = function(data, options) {
+
+        data = Network.format(this, data);
 
         options = options || {};
         options.iterations = options.iterations || 20000;
@@ -235,6 +251,40 @@ var Network = module.exports = function(__options) {
 // Common helpers namespace
 //-------------------------------------------------------------------------------------------------
 
+Network.format = function(network, data) {
+
+    // turn stream datum into array
+    if (!underscore.isArray(data)) {
+        var tmp = [];
+        tmp.push(data);
+        data = tmp;
+    }
+
+    // turn sparse hash input into arrays with 0s as filler
+    var datum = data[0].input;
+
+    if (!underscore(datum).isArray() && !(datum instanceof Float64Array)) {
+        if (!network.inputLookup) {
+            network.inputLookup = formator.make(underscore(data).pluck("input"));
+        }
+        data = data.map(function(datum) {
+            var array = formator.toArray(network.inputLookup, datum.input)
+            return underscore(underscore(datum).clone()).extend({ input: array });
+        }, network);
+    }
+
+    if (!underscore(data[0].output).isArray()) {
+        if (!network.outputLookup) {
+            network.outputLookup = formator.make(underscore(data).pluck("output"));
+        }
+        data = data.map(function(datum) {
+            var array = formator.toArray(network.outputLookup, datum.output);
+            return underscore(underscore(datum).clone()).extend({ output: array });
+        }, network);
+    }
+
+    return data;
+};
 
 Network.random = function(size) {
     size = size || 0.4;
